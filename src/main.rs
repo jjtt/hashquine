@@ -6,7 +6,7 @@ fn main() {
     let func = lause;
     let combinations = (1..=count).map(|_| 0..16u8).multi_cartesian_product();
     combinations
-        .into_par_iter()
+        .par_bridge()
         .map(|c| {
             let s = func(&c);
             (c, s)
