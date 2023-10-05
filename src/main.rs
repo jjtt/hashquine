@@ -1,11 +1,9 @@
 use itertools::Itertools;
-use std::iter;
-use std::ops::Range;
 
 fn main() {
-    let count = 7;
-    let func = sentence;
-    let combinations = (1..=count).map(|_| 0..16).multi_cartesian_product();
+    let count = 9;
+    let func = lause;
+    let combinations = (1..=count).map(|_| 0..16u8).multi_cartesian_product();
     combinations
         .map(|c| {
             let s = func(&c);
@@ -41,42 +39,50 @@ const FINNISH: [&str; 16] = [
     "f",
 ];
 
-fn sentence(input: &Vec<usize>) -> String {
+fn sentence(input: &Vec<u8>) -> String {
     format!(
         "The SHA256 for this sentence begins with: {}, {}, {}, {}, {}, {} and {}.",
-        ENGLISH[input[0]],
-        ENGLISH[input[1]],
-        ENGLISH[input[2]],
-        ENGLISH[input[3]],
-        ENGLISH[input[4]],
-        ENGLISH[input[5]],
-        ENGLISH[input[6]],
+        ENGLISH[input[0] as usize],
+        ENGLISH[input[1] as usize],
+        ENGLISH[input[2] as usize],
+        ENGLISH[input[3] as usize],
+        ENGLISH[input[4] as usize],
+        ENGLISH[input[5] as usize],
+        ENGLISH[input[6] as usize],
     )
 }
-fn lause(input: &Vec<usize>) -> String {
+fn lause(input: &Vec<u8>) -> String {
     format!(
-        "Tämän lauseen SHA256 alkaa: {}, {}, {}, {}, {}, {}, {}, {}.",
-        FINNISH[input[0]],
-        FINNISH[input[1]],
-        FINNISH[input[2]],
-        FINNISH[input[3]],
-        FINNISH[input[4]],
-        FINNISH[input[5]],
-        FINNISH[input[6]],
-        FINNISH[input[7]],
+        "Tämän lauseen SHA256 alkaa: {}, {}, {}, {}, {}, {}, {}, {} ja {}.",
+        FINNISH[input[0] as usize],
+        FINNISH[input[1] as usize],
+        FINNISH[input[2] as usize],
+        FINNISH[input[3] as usize],
+        FINNISH[input[4] as usize],
+        FINNISH[input[5] as usize],
+        FINNISH[input[6] as usize],
+        FINNISH[input[7] as usize],
+        FINNISH[input[8] as usize],
     )
 }
 
 /// return first 7 half bytes from sha256 hash of input
-fn hash_half_bytes_as_vec(input: &str, i: usize) -> Vec<usize> {
+fn hash_half_bytes_as_vec(input: &str, i: usize) -> Vec<u8> {
     use sha2::{Digest, Sha256};
     let mut hasher = Sha256::new();
     hasher.update(input);
     let result = hasher.finalize();
-    let result = format!("{:x}", result);
-    result
-        .chars()
-        .take(i)
-        .map(|c| c.to_digit(16).unwrap() as usize)
-        .collect()
+    let foo = result.as_slice();
+    let mut out = Vec::with_capacity(i);
+    for c in foo {
+        out.push(((c & 0xf0) >> 4));
+        if out.len() == i {
+            break;
+        }
+        out.push((c & 0x0f));
+        if out.len() == i {
+            break;
+        }
+    }
+    out
 }
