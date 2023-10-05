@@ -1,10 +1,12 @@
 use itertools::Itertools;
+use rayon::prelude::*;
 
 fn main() {
     let count = 9;
     let func = lause;
     let combinations = (1..=count).map(|_| 0..16u8).multi_cartesian_product();
     combinations
+        .into_par_iter()
         .map(|c| {
             let s = func(&c);
             (c, s)
